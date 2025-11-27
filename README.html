@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ريتم - Rhythm</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useRef } = React;
+
+        function RhythmApp() {
+          const [currentStep, setCurrentStep] = useState('onboarding');
+          const [userProfile, setUserProfile] = useState({name: '', healthData: {}});
+          const [dailyPhoto, setDailyPhoto] = useState(null);
+          const [photoAnalysis, setPhotoAnalysis] = useState(null);
+          const [points, setPoints] = useState(0);
+          const [streak, setStreak] = useState(0);
+          const [habitsDone, setHabitsDone] = useState({});
+          const [selectedLocation, setSelectedLocation] = useState('المنزل');
+          const dailyPhotoRef = useRef(null);
+
+          const habits = [
+            { id: 1, name: 'شرب الماء', points: 15, icon: '💧', type: 'positive' },
+            { id: 2, name: 'المشي', points: 20, icon: '🚶', type: 'positive' },
+            { id: 3, name: 'التدخين', points: 25, icon: '🚬', type: 'negative' },
+            { id: 4, name: 'الأكل السريع', points: 20, icon: '🍔', type: 'negative' }
+          ];
+
+          const OnboardingScreen = () => {
+            const [step, setStep] = useState(1);
+            const [name, setName] = useState('');
+            const [healthData, setHealthData] = useState({height: '', weight: '', age: ''});
+
+            const completeOnboarding = () => {
+              setUserProfile({ name, healthData });
+              setCurrentStep('dashboard');
+            };
+
+            if (step === 1) {
+              return (
+                <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #0f172a, #581c87, #0f172a)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px'}}>
+                  <div style={{maxWidth: '448px', width: '100%', background: 'rgba(30, 41, 59, 0.5)', backdropFilter: 'blur(16px)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '24px', padding: '32px'}}>
+                    <div style={{textAlign: 'center', marginBottom: '32px'}}>
+                      <div style={{background: 'linear-gradient(to right, #a855f7, #ec4899)', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '40px'}}>✨</div>
+                      <h1 style={{fontSize: '36px', fontWeight: 'bold', background: 'linear-gradient(to right, #c084fc, #f9a8d4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '8px'}}>ريتم</h1>
+                      <p style={{color: '#cbd5e1'}}>ابدأ رحلتك الصحية</p>
+                    </div>
+                    <div>
+                      <label style={{display: 'block', color: 'white', fontWeight: '600', marginBottom: '8px'}}>اسمك</label>
+                      <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="أدخل اسمك" style={{width: '100%', background: 'rgba(51, 65, 85, 0.5)', border: '1px solid #475569', borderRadius: '12px', padding: '12px 16px', color: 'white', outline: 'none'}} />
+                      <button onClick={() => setStep(2)} disabled={!name} style={{width: '100%', background: 'linear-gradient(to right, #a855f7, #ec4899)', padding: '16px', borderRadius: '12px', fontWeight: 'bold', color: 'white', marginTop: '24px', cursor: name ? 'pointer' : 'not-allowed', opacity: name ? 1 : 0.5, border: 'none'}}>التالي</button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #0f172a, #581c87, #0f172a)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px'}}>
+                <div style={{maxWidth: '448px', width: '100%', background: 'rgba(30, 41, 59, 0.5)', backdropFilter: 'blur(16px)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '24px', padding: '32px'}}>
+                  <h2 style={{fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '24px', textAlign: 'center'}}>بياناتك الصحية</h2>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px'}}>
+                    <div>
+                      <label style={{display: 'block', color: 'white', fontWeight: '600', fontSize: '14px', marginBottom: '8px'}}>الطول (سم)</label>
+                      <input type="number" value={healthData.height} onChange={(e) => setHealthData({...healthData, height: e.target.value})} placeholder="170" style={{width: '100%', background: 'rgba(51, 65, 85, 0.5)', border: '1px solid #475569', borderRadius: '12px', padding: '12px', color: 'white'}} />
+                    </div>
+                    <div>
+                      <label style={{display: 'block', color: 'white', fontWeight: '600', fontSize: '14px', marginBottom: '8px'}}>الوزن (كجم)</label>
+                      <input type="number" value={healthData.weight} onChange={(e) => setHealthData({...healthData, weight: e.target.value})} placeholder="70" style={{width: '100%', background: 'rgba(51, 65, 85, 0.5)', border: '1px solid #475569', borderRadius: '12px', padding: '12px', color: 'white'}} />
+                    </div>
+                  </div>
+                  <div style={{marginBottom: '16px'}}>
+                    <label style={{display: 'block', color: 'white', fontWeight: '600', fontSize: '14px', marginBottom: '8px'}}>العمر</label>
+                    <input type="number" value={healthData.age} onChange={(e) => setHealthData({...healthData, age: e.target.value})} placeholder="25" style={{width: '100%', background: 'rgba(51, 65, 85, 0.5)', border: '1px solid #475569', borderRadius: '12px', padding: '12px', color: 'white'}} />
+                  </div>
+                  <button onClick={completeOnboarding} disabled={!healthData.height || !healthData.weight || !healthData.age} style={{width: '100%', background: 'linear-gradient(to right, #a855f7, #ec4899)', padding: '16px', borderRadius: '12px', fontWeight: 'bold', color: 'white', cursor: (healthData.height && healthData.weight && healthData.age) ? 'pointer' : 'not-allowed', opacity: (healthData.height && healthData.weight && healthData.age) ? 1 : 0.5, border: 'none'}}>ابدأ الآن</button>
+                </div>
+              </div>
+            );
+          };
+
+          const DashboardScreen = () => {
+            const handlePhotoUpload = (e) => {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setDailyPhoto(reader.result);
+                  setPoints(prev => prev + 10);
+                  setStreak(prev => prev + 1);
+                  setTimeout(() => setPhotoAnalysis({skin: 'جيدة', eyes: 'بدون هالات', score: 87}), 1000);
+                };
+                reader.readAsDataURL(file);
+              }
+            };
+
+            const handleComplete = (id, pts) => {
+              if (!habitsDone[id]) {
+                setHabitsDone({...habitsDone, [id]: true});
+                setPoints(prev => prev + pts);
+              }
+            };
+
+            return (
+              <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #0f172a, #581c87, #0f172a)', padding: '24px'}}>
+                <div style={{maxWidth: '896px', margin: '0 auto'}}>
+                  <div style={{background: 'rgba(30, 41, 59, 0.5)', backdropFilter: 'blur(16px)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '16px', padding: '20px', marginBottom: '24px'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <div>
+                        <h1 style={{fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '8px'}}>{userProfile.name}</h1>
+                        <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} style={{background: 'transparent', color: 'white', border: 'none', fontSize: '14px'}}>
+                          <option style={{background: '#1e293b'}}>المنزل</option>
+                          <option style={{background: '#1e293b'}}>العمل</option>
+                          <option style={{background: '#1e293b'}}>الجيم</option>
+                        </select>
+                      </div>
+                      <div style={{display: 'flex', gap: '8px'}}>
+                        <button onClick={() => setCurrentStep('group')} style={{padding: '12px', background: 'rgba(168, 85, 247, 0.2)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '12px', color: '#a855f7', cursor: 'pointer'}}>👥</button>
+                        <button onClick={() => setCurrentStep('coach')} style={{padding: '12px', background: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '12px', color: '#22c55e', cursor: 'pointer', position: 'relative'}}>
+                          <span style={{position: 'absolute', top: '-4px', right: '-4px', width: '12px', height: '12px', background: '#22c55e', borderRadius: '50%'}}></span>
+                          🧠
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px'}}>
+                    <div style={{background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(249, 115, 22, 0.3)', borderRadius: '16px', padding: '16px'}}>
+                      <div style={{fontSize: '24px', marginBottom: '8px'}}>⚡</div>
+                      <p style={{fontSize: '24px', fontWeight: 'bold', color: 'white'}}>{streak}</p>
+                      <p style={{fontSize: '12px', color: '#94a3b8'}}>يوم متواصل</p>
+                    </div>
+                    <div style={{background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '16px', padding: '16px'}}>
+                      <div style={{fontSize: '24px', marginBottom: '8px'}}>🏆</div>
+                      <p style={{fontSize: '24px', fontWeight: 'bold', color: 'white'}}>{points}</p>
+                      <p style={{fontSize: '12px', color: '#94a3b8'}}>نقطة</p>
+                    </div>
+                    <div style={{background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '16px', padding: '16px'}}>
+                      <div style={{fontSize: '24px', marginBottom: '8px'}}>📊</div>
+                      <p style={{fontSize: '24px', fontWeight: 'bold', color: 'white'}}>67%</p>
+                      <p style={{fontSize: '12px', color: '#94a3b8'}}>جهدك</p>
+                    </div>
+                  </div>
+
+                  <h3 style={{fontSize: '20px', fontWeight: 'bold', color: 'white', marginBottom: '16px'}}>🎯 مهام اليوم</h3>
+                  {habits.map(habit => (
+                    <div key={habit.id} style={{background: habitsDone[habit.id] ? 'rgba(34, 197, 94, 0.1)' : 'rgba(30, 41, 59, 0.5)', border: habitsDone[habit.id] ? '1px solid rgba(34, 197, 94, 0.5)' : '1px solid #334155', borderRadius: '16px', padding: '20px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                      <div style={{display: 'flex', gap: '16px', alignItems: 'center'}}>
+                        <div style={{fontSize: '40px'}}>{habit.icon}</div>
+                        <div>
+                          <h4 style={{fontWeight: 'bold', color: 'white', fontSize: '18px'}}>{habit.name}</h4>
+                          <p style={{color: '#94a3b8', fontSize: '14px'}}>{habit.type === 'positive' ? 'عادة إيجابية' : 'تجنب'}</p>
+                        </div>
+                      </div>
+                      <div style={{textAlign: 'right'}}>
+                        <p style={{color: '#a855f7', fontWeight: 'bold', marginBottom: '8px'}}>+{habit.points}</p>
+                        <button onClick={() => handleComplete(habit.id, habit.points)} disabled={habitsDone[habit.id]} style={{padding: '8px 16px', background: habitsDone[habit.id] ? '#22c55e' : 'linear-gradient(to right, #a855f7, #ec4899)', borderRadius: '8px', color: 'white', fontWeight: '600', fontSize: '14px', border: 'none', cursor: habitsDone[habit.id] ? 'not-allowed' : 'pointer'}}>{habitsDone[habit.id] ? '✓ تم' : 'تم'}</button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div style={{background: 'linear-gradient(to right, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2))', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '16px', padding: '24px', marginTop: '24px'}}>
+                    <h3 style={{fontSize: '20px', fontWeight: 'bold', color: 'white', marginBottom: '16px'}}>📸 صورة اليوم <span style={{fontSize: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e', padding: '4px 8px', borderRadius: '9999px', marginLeft: '8px'}}>AI</span></h3>
+                    <input type="file" ref={dailyPhotoRef} onChange={handlePhotoUpload} accept="image/*" style={{display: 'none'}} />
+                    <button onClick={() => dailyPhotoRef.current?.click()} style={{width: '100%', height: '160px', background: 'rgba(51, 65, 85, 0.5)', border: '2px dashed rgba(168, 85, 247, 0.5)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginBottom: '16px'}}>
+                      {dailyPhoto ? <img src={dailyPhoto} alt="Daily" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px'}} /> : <div style={{textAlign: 'center', color: '#cbd5e1'}}><div style={{fontSize: '40px', marginBottom: '8px'}}>📷</div><span style={{fontWeight: '600'}}>التقط صورتك</span></div>}
+                    </button>
+                    {photoAnalysis && (
+                      <div style={{background: 'rgba(30, 41, 59, 0.5)', borderRadius: '12px', padding: '16px'}}>
+                        <h4 style={{fontWeight: 'bold', color: 'white', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px'}}><span>✨</span>نتيجة التحليل</h4>
+                        <div style={{fontSize: '14px'}}>
+                          <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px'}}><span style={{color: '#94a3b8'}}>البشرة:</span><span style={{color: '#22c55e'}}>{photoAnalysis.skin}</span></div>
+                          <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px'}}><span style={{color: '#94a3b8'}}>العيون:</span><span style={{color: '#22c55e'}}>{photoAnalysis.eyes}</span></div>
+                          <div style={{display: 'flex', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #334155'}}><span style={{color: 'white', fontWeight: 'bold'}}>النتيجة:</span><span style={{fontSize: '24px', fontWeight: 'bold', color: '#22c55e'}}>{photoAnalysis.score}%</span></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          };
+
+          const GroupScreen = () => {
+            const members = [{id:1,pts:312,eff:89},{id:2,pts:245,eff:78},{id:3,pts:points,eff:67,me:true},{id:4,pts:198,eff:65},{id:5,pts:156,eff:54}];
+            return (
+              <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #0f172a, #581c87, #0f172a)', padding: '24px'}}>
+                <div style={{maxWidth: '896px', margin: '0 auto'}}>
+                  <button onClick={() => setCurrentStep('dashboard')} style={{marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px'}}>← رجوع</button>
+                  <h2 style={{fontSize: '32px', fontWeight: 'bold', color: 'white', textAlign: 'center', marginBottom: '32px'}}>المنافسين</h2>
+                  {members.sort((a,b)=>b.pts-a.pts).map((m,i)=>(
+                    <div key={m.id} style={{background: m.me ? 'rgba(6, 182, 212, 0.1)' : 'rgba(30, 41, 59, 0.5)', border: m.me ? '1px solid #06b6d4' : '1px solid #334155', borderRadius: '16px', padding: '20px', marginBottom: '12px', display: 'flex', justifyContent: 'space-between'}}>
+                      <div style={{display: 'flex', gap: '16px', alignItems: 'center'}}>
+                        <div style={{position: 'relative', fontSize: '36px'}}>👤{i===0&&<span style={{position: 'absolute', top: '-8px', right: '-8px', fontSize: '24px'}}>👑</span>}</div>
+                        <div><h3 style={{fontWeight: 'bold', color: 'white', fontSize: '18px'}}>{m.me?'أنت':`عضو ${m.id}`}</h3><p style={{color: '#94a3b8', fontSize: '14px'}}>جهد: {m.eff}%</p></div>
+                      </div>
+                      <div style={{textAlign: 'right'}}><p style={{color: '#fbbf24', fontWeight: 'bold', fontSize: '20px'}}>{m.pts}</p><p style={{color: '#64748b', fontSize: '14px'}}>نقطة</p></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          };
+
+          const CoachScreen = () => (
+            <div style={{minHeight: '100vh', background: 'linear-gradient(to bottom right, #0f172a, #065f46, #0f172a)', padding: '24px'}}>
+              <div style={{maxWidth: '896px', margin: '0 auto'}}>
+                <button onClick={() => setCurrentStep('dashboard')} style={{marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px'}}>← رجوع</button>
+                <div style={{background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: '24px', padding: '24px'}}>
+                  <div style={{display: 'flex', gap: '16px'}}>
+                    <div style={{background: '#22c55e', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', flexShrink: 0}}>🧠</div>
+                    <div>
+                      <h3 style={{fontSize: '20px', fontWeight: 'bold', color: 'white', marginBottom: '8px'}}>💬 كوتشك الذكي <span style={{fontSize: '12px', background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e', padding: '4px 8px', borderRadius: '9999px', marginLeft: '8px'}}>AI</span></h3>
+                      <p style={{color: '#cbd5e1', lineHeight: '1.7'}}>صباح الخير {userProfile.name}! استمر على نفس المستوى. ركز اليوم على شرب الماء والمشي. تذكر: التدخين والأكل السريع مرتبطان - تجنب أحدهما يساعد في الآخر.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+
+          if (currentStep === 'onboarding') return <OnboardingScreen />;
+          if (currentStep === 'group') return <GroupScreen />;
+          if (currentStep === 'coach') return <CoachScreen />;
+          return <DashboardScreen />;
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<RhythmApp />);
+    </script>
+</body>
+</html>
